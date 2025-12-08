@@ -1,0 +1,20 @@
+<view class="container">
+  <text class="title">投资分析表单</text>
+
+  <view class="field">
+    <text>本次投资标的：</text>
+    <input placeholder="例如：PDD / BTC / CRCL" bindinput="onInputTarget"/>
+  </view>
+
+  <view class="field">
+    <text>买入理由：</text>
+    <textarea placeholder="写下你的研究逻辑…" bindinput="onInputReason"/>
+  </view>
+
+  <view class="field">
+    <text>仓位计划：</text>
+    <textarea placeholder="例如：10% 试探位…" bindinput="onInputPosition"/>
+  </view>
+
+  <button class="btn" bindtap="submit">提交分析</button>
+</view>

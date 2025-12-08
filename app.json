@@ -1,0 +1,11 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/form/form"
+  ],
+  "window": {
+    "navigationBarTitleText": "投资助手",
+    "navigationBarBackgroundColor": "#ffffff",
+    "backgroundColor": "#f7f7f7"
+  }
+}
