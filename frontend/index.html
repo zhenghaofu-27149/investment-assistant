@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>Investment CRO Assistant · 战术面板版</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    /* ====== 基本暗色主题 ====== */
+    :root {
+      --bg: #050816;
+      --bg-elevated: #0b1020;
+      --panel: #0f172a;
+      --panel-soft: #111827;
+      --border-subtle: #1f2937;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.12);
+      --danger: #f97373;
+      --danger-soft: rgba(248, 113, 113, 0.12);
+      --warning: #fbbf24;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --text-soft: #6b7280;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.9);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", system-ui, sans-serif;
+      background: radial-gradient(circle at top, #111827 0, #020617 55%, #000 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+    }
+
+    .app {
+      max-width: 1320px;
+      margin: 24px auto 40px auto;
+      padding: 0 16px;
+    }
+
+    /* ====== 头部 ====== */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+      padding: 12px 18px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(56, 189, 248, 0.16), transparent);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .title {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    .subtitle {
+      font-size: 12px;
+      color: var(--text-soft);
+    }
+
+    .badge {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      color: var(--text-muted);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.8);
+    }
+
+    /* ====== 主布局：三栏 ====== */
+    .layout {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1.3fr) minmax(0, 1.1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 1100px) {
+      .layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .panel {
+      background: linear-gradient(145deg, var(--panel), var(--panel-soft));
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-soft);
+      padding: 14px 14px 16px 14px;
+    }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-title span.label {
+      color: var(--accent);
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+    }
+
+    /* ====== 左栏：历史记录 ====== */
+    .history-list {
+      max-height: 620px;
+      overflow-y: auto;
+      padding-right: 4px;
+      margin-bottom: 10px;
+    }
+
+    .history-empty {
+      font-size: 12px;
+      color: var(--text-soft);
+      padding: 10px 6px 4px 6px;
+    }
+
+    .history-item {
+      border-radius: var(--radius-md);
+      padding: 8px 9px;
+      margin-bottom: 6px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(31, 41, 55, 0.9);
+      cursor: pointer;
+      transition: all 0.16s ease-out;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .history-item:hover {
+      border-color: rgba(56, 189, 248, 0.7);
+      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.14), #020617);
+      transform: translateY(-1px);
+    }
+
+    .history-item.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.5);
+      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.26), #020617);
+    }
+
+    .history-main {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+    }
+
+    .history-asset {
+      font-weight: 500;
+      color: #e5e7eb;
+      max-width: 130px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .history-score {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .history-verdict {
+      font-size: 11px;
+      padding: 1px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      color: var(--text-soft);
+      margin-left: 6px;
+    }
+
+    .history-meta {
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .history-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 4px;
+    }
+
+    .secondary-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      color: var(--text-soft);
+      background: rgba(15, 23, 42, 0.9);
+      font-size: 11px;
+      padding: 4px 8px;
+      cursor: pointer;
+      transition: all 0.15s ease-out;
+    }
+
+    .secondary-btn:hover {
+      color: #e5e7eb;
+      border-color: var(--danger);
+      background: var(--danger-soft);
+    }
+
+    /* ====== 中栏：决策输入 ====== */
+    .form-section {
+      margin-bottom: 12px;
+    }
+
+    .form-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .label-main {
+      font-weight: 500;
+      color: #e5e7eb;
+    }
+
+    .label-hint {
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea {
+      width: 100%;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
+      padding: 8px 10px;
+      font-size: 13px;
+      outline: none;
+      transition: border 0.15s ease-out, box-shadow 0.15s ease-out,
+        background 0.15s ease-out;
+      resize: vertical;
+      min-height: 40px;
+    }
+
+    textarea {
+      min-height: 78px;
+      max-height: 200px;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: var(--text-soft);
+      font-size: 12px;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.4);
+      background: #020617;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    @media (max-width: 900px) {
+      .form-row {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .submit-row {
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .primary-btn {
+      flex-shrink: 0;
+      border: none;
+      border-radius: 999px;
+      padding: 9px 22px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #0b1120;
+      background: linear-gradient(135deg, #38bdf8, #22c55e);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 12px 30px rgba(34, 211, 238, 0.35);
+      transition: transform 0.1s ease-out, box-shadow 0.1s ease-out,
+        filter 0.12s ease-out, opacity 0.12s ease-out;
+    }
+
+    .primary-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 16px 40px rgba(34, 211, 238, 0.4);
+      filter: brightness(1.05);
+    }
+
+    .primary-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 6px 18px rgba(34, 211, 238, 0.35);
+    }
+
+    .primary-btn[disabled] {
+      opacity: 0.6;
+      cursor: default;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .submit-status {
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    /* ====== 右栏：评估结果 ====== */
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .score-main {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .score-value {
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .score-sub {
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    .verdict-chip {
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 500;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+    }
+
+    .verdict-ok {
+      border-color: #22c55e;
+      background: rgba(34, 197, 94, 0.18);
+      color: #bbf7d0;
+    }
+
+    .verdict-mid {
+      border-color: #fbbf24;
+      background: rgba(251, 191, 36, 0.16);
+      color: #fef9c3;
+    }
+
+    .verdict-bad {
+      border-color: #fb7185;
+      background: rgba(248, 113, 113, 0.18);
+      color: #ffe4e6;
+    }
+
+    .result-section-title {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin: 10px 0 4px 0;
+      font-weight: 500;
+    }
+
+    .dimensions-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    @media (max-width: 900px) {
+      .dimensions-grid {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .dim-card {
+      border-radius: var(--radius-md);
+      padding: 7px 8px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(31, 41, 55, 0.9);
+      font-size: 11px;
+    }
+
+    .dim-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .dim-name {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .dim-score {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .dim-comment {
+      color: var(--text-soft);
+      line-height: 1.35;
+    }
+
+    .flags-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .flag-chip {
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      color: var(--text-muted);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .advice-box {
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(56, 189, 248, 0.6);
+      background: rgba(15, 23, 42, 0.95);
+      padding: 8px 9px;
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .questions-list {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .questions-list li {
+      margin-bottom: 2px;
+    }
+
+    .result-placeholder {
+      font-size: 12px;
+      color: var(--text-soft);
+      line-height: 1.5;
+      margin-top: 6px;
+    }
+
+    .error-text {
+      font-size: 12px;
+      color: #fecaca;
+      background: rgba(127, 29, 29, 0.75);
+      border-radius: var(--radius-md);
+      padding: 8px 9px;
+      margin-top: 6px;
+      border: 1px solid rgba(248, 113, 113, 0.7);
+    }
+
+    /* 滚动条美化一点 */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(55, 65, 81, 0.9);
+      border-radius: 999px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(75, 85, 99, 1);
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="title-wrap">
+        <div class="title">Investment CRO Assistant</div>
+        <div class="subtitle">给每一笔交易一份「风控体检报告」，帮你少交一点情绪税。</div>
+      </div>
+      <div class="badge">本地运行 · v0.6 · 实验功能：历史记录</div>
+    </header>
+
+    <main class="layout">
+      <!-- ===== 左栏：历史记录 ===== -->
+      <aside class="panel" id="history-panel">
+        <div class="panel-title">
+          <span>历史决策 · 最近评估</span>
+          <span class="label">localStorage</span>
+        </div>
+        <div id="history-list" class="history-list"></div>
+        <div class="history-actions">
+          <button id="clear-history" class="secondary-btn">清空全部历史</button>
+        </div>
+      </aside>
+
+      <!-- ===== 中栏：当前输入 ===== -->
+      <section class="panel">
+        <div class="panel-title">
+          <span>当前决策输入</span>
+          <span class="label">一步步填，别偷懒</span>
+        </div>
+
+        <div class="form-section">
+          <div class="form-label">
+            <span class="label-main">一、标的名称</span>
+            <span class="label-hint">例如：NVDA/AMD/META</span>
+          </div>
+          <input id="asset_name" type="text" placeholder="写清楚：股票代码或企业名称…" />
+        </div>
+
+        <div class="form-section">
+          <div class="form-label">
+            <span class="label-main">二、我的研究总结</span>
+            <span class="label-hint">生意模式 · 企业文化 · 优势 / 风险 · 你真的理解这门生意吗？</span>
+          </div>
+          <textarea id="research_text" placeholder="别糊弄一句‘长期看好’。写你看到的生意本质、增长驱动力、关键指标、核心风险点…"></textarea>
+        </div>
+
+        <!-- ★★★ 合并后的板块：买入/卖出逻辑 + 执行计划 ★★★ -->
+        <div class="form-section">
+          <div class="form-label">
+            <span class="label-main">三、买入 / 卖出逻辑 + 执行计划</span>
+            <span class="label-hint">为什么是现在？你怎么进场，怎么退出？</span>
+          </div>
+          <textarea
+            id="logic_plan"
+            placeholder="建议你至少覆盖这些内容：
+- 当前估值在哪个位置（严重低估？严重高估？）？核心假设是什么（用户增长？利润率？政策？周期？）？
+- 最可能出错的地方在哪里？
+- 入场：在哪些价格区间分几笔买入？每笔多少仓位？
+- 卖出：什么情况下会减仓 / 清仓？
+- 止损：放在哪里，背后的逻辑是什么？"
+          ></textarea>
+        </div>
+        <!-- ★★★ 合并结束 ★★★ -->
+
+        <div class="form-row">
+          <div class="form-section">
+            <div class="form-label">
+              <span class="label-main">四、当前情绪自评（1–10）</span>
+              <span class="label-hint">1=冷静到无聊，10=上头梭哈</span>
+            </div>
+            <input
+              id="emotion_score"
+              type="number"
+              min="1"
+              max="10"
+              placeholder="建议：谨慎评估自己的情绪"
+            />
+          </div>
+
+          <div class="form-section">
+            <div class="form-label">
+              <span class="label-main">五、计划仓位（占总资金 %）</span>
+              <span class="label-hint">诚实点，这决定你睡不睡得着</span>
+            </div>
+            <input
+              id="position_pct"
+              type="number"
+              min="0"
+              max="100"
+              step="0.1"
+              placeholder="10 表示你愿意拿出总资金的 10% "
+            />
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-label">
+            <span class="label-main">六、这笔钱亏光的影响</span>
+            <span class="label-hint">说人话：亏光了你会怎样</span>
+          </div>
+          <textarea id="capital_impact" placeholder="例如：影响不大 / 这是房子首付的一部分 / 这是半年生活费 / 这是我创业预备金…"></textarea>
+        </div>
+
+        <div class="submit-row">
+          <button id="submit-btn" class="primary-btn">
+            <span id="submit-text">提交给 CRO 评估</span>
+          </button>
+          <div id="submit-status" class="submit-status">
+            还没开始评估。把左边填完整一点，会骂得更有价值。
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== 右栏：评估结果 ===== -->
+      <section class="panel">
+        <div class="panel-title">
+          <span>风控体检报告</span>
+          <span class="label">自动生成 · 深呼吸再看</span>
+        </div>
+
+        <div id="result-container">
+          <div class="result-placeholder">
+            这里会显示每次决策的「风控体检报告」。<br />
+            填好左侧内容，点「提交给 CRO 评估」，我会给你：
+            <ul>
+              <li>总分 + 简单判定（优秀 / 一般 / 危险）</li>
+              <li>五个维度的打分与点评</li>
+              <li>关键风险标签</li>
+              <li>下一步应该怎么改进</li>
+              <li>以及几条不太客气但有用的追问</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // =============== 配置 ===============
+    const API_BASE = "http://127.0.0.1:8000";
+    const STORAGE_KEY = "cro_history_v1";
+
+    // =============== 工具函数 ===============
+    function $(id) {
+      return document.getElementById(id);
+    }
+
+    function formatDateTime(iso) {
+      const d = new Date(iso);
+      const pad = (n) => String(n).padStart(2, "0");
+      return (
+        d.getFullYear() +
+        "-" +
+        pad(d.getMonth() + 1) +
+        "-" +
+        pad(d.getDate()) +
+        " " +
+        pad(d.getHours()) +
+        ":" +
+        pad(d.getMinutes())
+      );
+    }
+
+    function verdictClass(verdict) {
+      if (!verdict) return "";
+      if (verdict === "优秀") return "verdict-ok";
+      if (verdict === "危险") return "verdict-bad";
+      return "verdict-mid";
+    }
+
+    // =============== 历史记录：存取 ===============
+    function loadHistory() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        console.error("读取历史失败", e);
+        return [];
+      }
+    }
+
+    function saveHistory(list) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+      } catch (e) {
+        console.error("保存历史失败", e);
+      }
+    }
+
+    function addHistoryItem(requestPayload, responseData) {
+      const list = loadHistory();
+      const item = {
+        id: Date.now(),
+        createdAt: new Date().toISOString(),
+        asset_name: requestPayload.asset_name || "",
+        request: requestPayload,
+        response: responseData,
+      };
+      list.push(item);
+      saveHistory(list);
+      renderHistoryList(item.id);
+    }
+
+    // =============== 历史记录：渲染 ===============
+    function renderHistoryList(activeId = null) {
+      const list = loadHistory().slice().sort((a, b) => b.id - a.id);
+      const container = $("history-list");
+      container.innerHTML = "";
+
+      if (list.length === 0) {
+        container.innerHTML =
+          '<div class="history-empty">暂无历史记录。等你评估过几次之后，这里会变成你的「交易黑历史博物馆」。</div>';
+        return;
+      }
+
+      list.forEach((item) => {
+        const div = document.createElement("div");
+        div.className =
+          "history-item" + (item.id === activeId ? " active" : "");
+        div.dataset.id = item.id;
+
+        const score = item.response?.overall_score ?? "-";
+        const verdict = item.response?.verdict ?? "-";
+
+        div.innerHTML = `
+          <div class="history-main">
+            <div class="history-asset" title="${item.asset_name || ""}">
+              ${item.asset_name || "(未命名标的)"}
+            </div>
+            <div class="history-score">
+              ${score !== "-" ? `${score} 分` : "-"}
+              <span class="history-verdict">${verdict}</span>
+            </div>
+          </div>
+          <div class="history-meta">${formatDateTime(item.createdAt)}</div>
+        `;
+
+        div.addEventListener("click", () => {
+          loadHistoryItem(item.id);
+        });
+
+        container.appendChild(div);
+      });
+    }
+
+    function loadHistoryItem(id) {
+      const list = loadHistory();
+      const item = list.find((x) => x.id === id);
+      if (!item) return;
+
+      // 填回表单
+      const req = item.request || {};
+      $("asset_name").value = req.asset_name || "";
+      $("research_text").value = req.research_text || "";
+
+      // 合并后：从 thesis_text / plan_text 中恢复逻辑 + 计划输入
+      const mergedLogic =
+        (req.thesis_text || "") ||
+        (req.plan_text || "");
+      $("logic_plan").value = mergedLogic;
+
+      $("emotion_score").value =
+        typeof req.emotion_score === "number" ? req.emotion_score : "";
+      $("position_pct").value =
+        typeof req.position_pct === "number" ? req.position_pct : "";
+      $("capital_impact").value = req.capital_impact || "";
+
+      // 渲染结果
+      renderResult(item.response);
+
+      renderHistoryList(id);
+      $("submit-status").textContent =
+        "已载入历史记录（" + formatDateTime(item.createdAt) + "）。你可以在此基础上修改后重新评估。";
+    }
+
+    // =============== 结果渲染 ===============
+    function renderResult(data) {
+      const container = $("result-container");
+
+      if (!data || typeof data !== "object") {
+        container.innerHTML =
+          '<div class="error-text">后端返回的内容有点奇怪，没法正常解析。</div>';
+        return;
+      }
+
+      const overall = data.overall_score ?? 0;
+      const verdict = data.verdict || "";
+      const dims = data.dimensions || {};
+      const flags = Array.isArray(data.flags) ? data.flags : [];
+      const advice = data.advice || "";
+      const followups = Array.isArray(data.followup_questions)
+        ? data.followup_questions
+        : [];
+
+      container.innerHTML = `
+        <div class="result-header">
+          <div class="score-main">
+            <div class="score-value">${overall} / 100</div>
+            <div class="score-sub">本次决策的综合得分</div>
+          </div>
+          <div class="verdict-chip ${verdictClass(
+            verdict
+          )}">结论：${verdict || "——"}</div>
+        </div>
+
+        <div class="result-section-title">一、五个维度的小结</div>
+        <div class="dimensions-grid">
+          ${renderDimCard("研究完整度", dims.research_quality)}
+          ${renderDimCard("逻辑严谨度", dims.logic_rigour)}
+          ${renderDimCard("风险管理", dims.risk_management)}
+          ${renderDimCard("情绪控制", dims.emotion_control)}
+          ${renderDimCard("资金安全性", dims.capital_safety)}
+        </div>
+
+        <div class="result-section-title">二、核心风险标签</div>
+        ${
+          flags.length > 0
+            ? `<div class="flags-wrap">
+                ${flags
+                  .map(
+                    (f) =>
+                      `<span class="flag-chip">${String(f).trim()}</span>`
+                  )
+                  .join("")}
+              </div>`
+            : '<div class="result-placeholder">暂未明显标记风险标签，这一条说明你写得可能还不够具体。</div>'
+        }
+
+        <div class="result-section-title">三、针对本次决策的建议</div>
+        ${
+          advice
+            ? `<div class="advice-box">${advice}</div>`
+            : '<div class="result-placeholder">暂无建议文本。</div>'
+        }
+
+        <div class="result-section-title">四、需要你再认真回答的追问</div>
+        ${
+          followups.length > 0
+            ? `<ol class="questions-list">
+                ${followups
+                  .map(
+                    (q) =>
+                      `<li>${String(q)
+                        .replace(/^\d+[\.\、]\s*/, "")
+                        .trim()}</li>`
+                  )
+                  .join("")}
+              </ol>`
+            : '<div class="result-placeholder">暂时没有追问，但这很不正常，说明你那边的描述太简单了。</div>'
+        }
+      `;
+    }
+
+    function renderDimCard(name, dim) {
+      const score =
+        dim && typeof dim.score === "number" ? dim.score : "—";
+      const comment =
+        dim && typeof dim.comment === "string" ? dim.comment : "暂无具体点评。";
+
+      return `
+        <div class="dim-card">
+          <div class="dim-head">
+            <div class="dim-name">${name}</div>
+            <div class="dim-score">${score}</div>
+          </div>
+          <div class="dim-comment">${comment}</div>
+        </div>
+      `;
+    }
+
+    // =============== 提交逻辑 ===============
+    async function handleSubmit() {
+      const btn = $("submit-btn");
+      const status = $("submit-status");
+
+      const asset_name = $("asset_name").value.trim();
+      const research_text = $("research_text").value.trim();
+      const logic_plan = $("logic_plan").value.trim();
+      const emotion_raw = $("emotion_score").value.trim();
+      const position_raw = $("position_pct").value.trim();
+      const capital_impact = $("capital_impact").value.trim();
+
+      if (!asset_name) {
+        alert("至少把标的名称写清楚。");
+        return;
+      }
+
+      const emotion_score = Number(emotion_raw);
+      if (
+        !Number.isFinite(emotion_score) ||
+        emotion_score < 1 ||
+        emotion_score > 10
+      ) {
+        alert("情绪自评分请填 1–10 的数字。");
+        return;
+      }
+
+      const position_pct = Number(position_raw);
+      if (!Number.isFinite(position_pct) || position_pct < 0) {
+        alert("计划仓位请填一个 >= 0 的数字（单位是 %）。");
+        return;
+      }
+
+      const payload = {
+        asset_name,
+        research_text,
+        // 合并后：同一份内容喂给 thesis_text 和 plan_text
+        thesis_text: logic_plan,
+        plan_text: logic_plan,
+        emotion_score,
+        capital_impact,
+        position_pct,
+      };
+
+      try {
+        btn.disabled = true;
+        $("submit-text").textContent = "评估中…";
+        status.textContent =
+          "CRO 正在阅读你的废话并努力从里面找逻辑，大概几秒钟。";
+
+        const resp = await fetch(API_BASE + "/evaluate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (!resp.ok) {
+          const text = await resp.text();
+          $("result-container").innerHTML =
+            '<div class="error-text">后端返回错误：' +
+            resp.status +
+            " " +
+            resp.statusText +
+            "<br/>" +
+            text +
+            "</div>";
+          status.textContent =
+            "评估失败了，多半是后端 / API Key 那边出了点问题。";
+          return;
+        }
+
+        const data = await resp.json();
+        renderResult(data);
+        addHistoryItem(payload, data);
+        status.textContent =
+          "评估完成，右侧是本次决策的体检结果。建议把追问问题一条条认真写一遍。";
+      } catch (err) {
+        console.error(err);
+        $("result-container").innerHTML =
+          '<div class="error-text">请求失败：' +
+          (err && err.message ? err.message : String(err)) +
+          "</div>";
+        status.textContent =
+          "前端跟后端说话失败了，检查一下后端是不是没跑起来，或者端口、网络抽风。";
+      } finally {
+        btn.disabled = false;
+        $("submit-text").textContent = "提交给 CRO 评估";
+      }
+    }
+
+    // =============== 清空历史 ===============
+    function clearHistory() {
+      if (
+        !confirm(
+          "确定清空所有历史记录？这只会删本机浏览器里的数据，不会影响你的真实资产，但会影响你复盘。"
+        )
+      ) {
+        return;
+      }
+      saveHistory([]);
+      renderHistoryList();
+      $("submit-status").textContent = "历史记录已清空。后面每次评估会重新积累。";
+    }
+
+    // =============== 初始化 ===============
+    function init() {
+      renderHistoryList();
+
+      $("submit-btn").addEventListener("click", (e) => {
+        e.preventDefault();
+        handleSubmit();
+      });
+
+      $("clear-history").addEventListener("click", (e) => {
+        e.preventDefault();
+        clearHistory();
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", init);
+  </script>
+</body>
+</html>

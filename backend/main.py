@@ -4,6 +4,7 @@ from typing import Dict, List
 
 import httpx
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
 
@@ -16,7 +17,16 @@ MODEL_NAME = os.getenv("MODEL_NAME", "deepseek-chat")
 if not DEEPSEEK_API_KEY:
     raise RuntimeError("缺少 DEEPSEEK_API_KEY，请在 .env 文件中配置")
 
-app = FastAPI(title="Investment CRO API", version="0.5.0")
+app = FastAPI(title="Investment CRO API", version="0.6.0")
+
+# 允许前端跨域访问（后面你做网页会用到）
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 本地开发先全开，之后可以收紧
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class EvaluateRequest(BaseModel):
@@ -45,6 +55,9 @@ class EvaluateResponse(BaseModel):
 
 SYSTEM_PROMPT = """
 你是用户的首席投资风控官（CRO），冷静、理性、直截了当。
+
+⚠️ 从现在开始，你的输出**必须是合法 JSON**，不能包含任何额外文字、说明、markdown 标题、自然语言前后缀。
+如果你输出非 JSON，本系统会直接报错，用户什么也看不到。
 
 你的职责：
 - 根据用户提供的研究记录和操作计划，评估这次投资决策是否理性
@@ -84,7 +97,8 @@ followup_questions：
 - 每个问题都要具体、尖锐，能直接暴露决策中的盲点或假设
 - 优先围绕：能力圈、关键假设、最坏情况、仓位合理性、卖出条件
 
-你必须严格输出纯 JSON，结构如下，不要有任何解释文字、注释、反引号或多余文本：
+⚠️ 输出格式要求（非常重要）：
+你必须严格输出**纯 JSON**，结构如下，不要有任何解释文字、注释、前缀或多余文本：
 
 {
   "overall_score": 0,
@@ -138,6 +152,8 @@ async def call_deepseek(prompt: str) -> str:
             {"role": "user", "content": prompt},
         ],
         "temperature": 0.2,
+        # 强制要求 JSON 输出（DeepSeek 兼容 OpenAI 协议）
+        "response_format": {"type": "json_object"},
     }
 
     async with httpx.AsyncClient(timeout=60) as client:
@@ -155,7 +171,8 @@ async def call_deepseek(prompt: str) -> str:
 
     data = resp.json()
     try:
-        return data["choices"][0]["message"]["content"]
+        content = data["choices"][0]["message"]["content"]
+        return content
     except Exception as e:
         raise HTTPException(
             status_code=500,
@@ -181,13 +198,12 @@ def parse_json_safely(raw_text: str) -> dict:
         stripped = raw_text.strip("`").strip()
         if stripped.lower().startswith("json"):
             stripped = stripped[4:].strip()
-        raw_text = stripped
         try:
-            return json.loads(raw_text)
+            return json.loads(stripped)
         except json.JSONDecodeError:
             pass
 
-    # 3. 截取第一个 { 到最后一个 } 之间
+    # 3. 截取第一个 { 到 最后一个 } 之间
     start = raw_text.find("{")
     end = raw_text.rfind("}")
     if start != -1 and end != -1 and end > start:
@@ -197,16 +213,21 @@ def parse_json_safely(raw_text: str) -> dict:
         except json.JSONDecodeError:
             pass
 
-    # 实在不行就抛错，把前 200 字符返回
+    # 打印一份出来方便你在终端看原始返回
+    print("==== RAW MODEL OUTPUT BEGIN ====")
+    print(raw_text)
+    print("==== RAW MODEL OUTPUT END ====")
+
+    # 实在不行就抛错，把前 200 字符返回给你看
     raise HTTPException(
         status_code=500,
-        detail=f"模型返回不是合法 JSON，前200字符为：{raw_text[:200]}",
+        detail=f"模型返回不是合法 JSON：{raw_text[:200]}",
     )
 
 
-@app.get("/")
-async def root():
-    return {"status": "ok", "message": "Investment CRO API running"}
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
 
 
 @app.post("/evaluate", response_model=EvaluateResponse)
