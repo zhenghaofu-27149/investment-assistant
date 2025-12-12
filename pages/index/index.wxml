@@ -1,9 +1,0 @@
-<view class="container">
-  <text class="title">投资分析助手</text>
-
-  <view class="desc">
-    输入你的投资研究内容，我们将为你给出智能评分与建议。
-  </view>
-
-  <button bindtap="goToForm" class="btn">开始分析</button>
-</view>

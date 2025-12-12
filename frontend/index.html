@@ -25,15 +25,12 @@
       --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.9);
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text",
-        "Segoe UI", system-ui, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
       background: radial-gradient(circle at top, #111827 0, #020617 55%, #000 100%);
       color: var(--text-main);
       min-height: 100vh;
@@ -50,6 +47,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 12px;
       margin-bottom: 18px;
       padding: 12px 18px;
       border-radius: 999px;
@@ -63,17 +61,31 @@
       display: flex;
       flex-direction: column;
       gap: 3px;
+      min-width: 0;
     }
 
     .title {
       font-size: 18px;
       font-weight: 600;
       letter-spacing: 0.03em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .subtitle {
       font-size: 12px;
       color: var(--text-soft);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
     }
 
     .badge {
@@ -83,6 +95,57 @@
       color: var(--text-muted);
       border: 1px solid rgba(148, 163, 184, 0.6);
       background: rgba(15, 23, 42, 0.8);
+      white-space: nowrap;
+    }
+
+    /* 顶部用户切换 */
+    .login-panel {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      background: rgba(15, 23, 42, 0.75);
+      white-space: nowrap;
+    }
+    .login-panel label {
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+    .login-panel input {
+      width: 180px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: #020617;
+      color: var(--text-main);
+      padding: 5px 8px;
+      font-size: 11px;
+      outline: none;
+    }
+    .login-panel input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.4);
+    }
+    .login-panel button {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-muted);
+      font-size: 11px;
+      padding: 5px 10px;
+      cursor: pointer;
+      transition: all 0.15s ease-out;
+    }
+    .login-panel button:hover {
+      border-color: var(--accent);
+      color: #e5e7eb;
+      background: var(--accent-soft);
+    }
+    .login-status {
+      font-size: 11px;
+      color: var(--text-soft);
+      margin-left: 4px;
     }
 
     /* ====== 主布局：三栏 ====== */
@@ -93,9 +156,10 @@
     }
 
     @media (max-width: 1100px) {
-      .layout {
-        grid-template-columns: minmax(0, 1fr);
-      }
+      .layout { grid-template-columns: minmax(0, 1fr); }
+      header { border-radius: 18px; flex-wrap: wrap; }
+      .header-right { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
+      .login-panel input { width: 160px; }
     }
 
     .panel {
@@ -170,6 +234,7 @@
       justify-content: space-between;
       align-items: center;
       font-size: 12px;
+      gap: 8px;
     }
 
     .history-asset {
@@ -184,6 +249,7 @@
     .history-score {
       font-size: 11px;
       color: var(--text-muted);
+      white-space: nowrap;
     }
 
     .history-verdict {
@@ -223,10 +289,67 @@
       background: var(--danger-soft);
     }
 
-    /* ====== 中栏：决策输入 ====== */
-    .form-section {
-      margin-bottom: 12px;
+    /* 当前用户块（左侧） */
+    .user-block {
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(31, 41, 55, 0.9);
+      background: rgba(15, 23, 42, 0.9);
+      padding: 8px 9px;
+      margin-bottom: 8px;
+      font-size: 11px;
+      color: var(--text-soft);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
+
+    .user-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .user-row input {
+      flex: 1;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: #020617;
+      color: var(--text-main);
+      padding: 5px 8px;
+      font-size: 11px;
+      outline: none;
+    }
+
+    .user-row input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.4);
+    }
+
+    .user-row button {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-muted);
+      font-size: 11px;
+      padding: 4px 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s ease-out;
+    }
+
+    .user-row button:hover {
+      border-color: var(--accent);
+      color: #e5e7eb;
+      background: var(--accent-soft);
+    }
+
+    .user-current {
+      font-size: 11px;
+      color: var(--text-soft);
+    }
+
+    /* ====== 中栏：决策输入 ====== */
+    .form-section { margin-bottom: 12px; }
 
     .form-label {
       font-size: 12px;
@@ -235,21 +358,13 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 10px;
     }
 
-    .label-main {
-      font-weight: 500;
-      color: #e5e7eb;
-    }
+    .label-main { font-weight: 500; color: #e5e7eb; }
+    .label-hint { font-size: 11px; color: var(--text-soft); }
 
-    .label-hint {
-      font-size: 11px;
-      color: var(--text-soft);
-    }
-
-    input[type="text"],
-    input[type="number"],
-    textarea {
+    input[type="text"], input[type="number"], textarea {
       width: 100%;
       border-radius: var(--radius-md);
       border: 1px solid var(--border-subtle);
@@ -258,25 +373,19 @@
       padding: 8px 10px;
       font-size: 13px;
       outline: none;
-      transition: border 0.15s ease-out, box-shadow 0.15s ease-out,
-        background 0.15s ease-out;
+      transition: border 0.15s ease-out, box-shadow 0.15s ease-out, background 0.15s ease-out;
       resize: vertical;
       min-height: 40px;
     }
 
-    textarea {
-      min-height: 78px;
-      max-height: 200px;
-    }
+    textarea { min-height: 78px; max-height: 200px; }
 
-    input::placeholder,
-    textarea::placeholder {
+    input::placeholder, textarea::placeholder {
       color: var(--text-soft);
       font-size: 12px;
     }
 
-    input:focus,
-    textarea:focus {
+    input:focus, textarea:focus {
       border-color: var(--accent);
       box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.4);
       background: #020617;
@@ -289,9 +398,7 @@
     }
 
     @media (max-width: 900px) {
-      .form-row {
-        grid-template-columns: minmax(0, 1fr);
-      }
+      .form-row { grid-template-columns: minmax(0, 1fr); }
     }
 
     .submit-row {
@@ -316,8 +423,7 @@
       align-items: center;
       gap: 8px;
       box-shadow: 0 12px 30px rgba(34, 211, 238, 0.35);
-      transition: transform 0.1s ease-out, box-shadow 0.1s ease-out,
-        filter 0.12s ease-out, opacity 0.12s ease-out;
+      transition: transform 0.1s ease-out, box-shadow 0.1s ease-out, filter 0.12s ease-out, opacity 0.12s ease-out;
     }
 
     .primary-btn:hover {
@@ -349,23 +455,12 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 8px;
+      gap: 10px;
     }
 
-    .score-main {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .score-value {
-      font-size: 22px;
-      font-weight: 600;
-    }
-
-    .score-sub {
-      font-size: 11px;
-      color: var(--text-soft);
-    }
+    .score-main { display: flex; flex-direction: column; gap: 2px; }
+    .score-value { font-size: 22px; font-weight: 600; }
+    .score-sub { font-size: 11px; color: var(--text-soft); }
 
     .verdict-chip {
       padding: 4px 10px;
@@ -375,25 +470,12 @@
       border: 1px solid rgba(148, 163, 184, 0.7);
       background: rgba(15, 23, 42, 0.9);
       color: #e5e7eb;
+      white-space: nowrap;
     }
 
-    .verdict-ok {
-      border-color: #22c55e;
-      background: rgba(34, 197, 94, 0.18);
-      color: #bbf7d0;
-    }
-
-    .verdict-mid {
-      border-color: #fbbf24;
-      background: rgba(251, 191, 36, 0.16);
-      color: #fef9c3;
-    }
-
-    .verdict-bad {
-      border-color: #fb7185;
-      background: rgba(248, 113, 113, 0.18);
-      color: #ffe4e6;
-    }
+    .verdict-ok { border-color: #22c55e; background: rgba(34, 197, 94, 0.18); color: #bbf7d0; }
+    .verdict-mid { border-color: #fbbf24; background: rgba(251, 191, 36, 0.16); color: #fef9c3; }
+    .verdict-bad { border-color: #fb7185; background: rgba(248, 113, 113, 0.18); color: #ffe4e6; }
 
     .result-section-title {
       font-size: 12px;
@@ -409,9 +491,7 @@
     }
 
     @media (max-width: 900px) {
-      .dimensions-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
+      .dimensions-grid { grid-template-columns: minmax(0, 1fr); }
     }
 
     .dim-card {
@@ -429,27 +509,11 @@
       margin-bottom: 4px;
     }
 
-    .dim-name {
-      color: var(--text-muted);
-      font-weight: 500;
-    }
+    .dim-name { color: var(--text-muted); font-weight: 500; }
+    .dim-score { color: var(--accent); font-weight: 600; }
+    .dim-comment { color: var(--text-soft); line-height: 1.35; }
 
-    .dim-score {
-      color: var(--accent);
-      font-weight: 600;
-    }
-
-    .dim-comment {
-      color: var(--text-soft);
-      line-height: 1.35;
-    }
-
-    .flags-wrap {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
+    .flags-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
     .flag-chip {
       padding: 3px 8px;
       border-radius: 999px;
@@ -469,24 +533,10 @@
       line-height: 1.45;
     }
 
-    .questions-list {
-      margin: 0;
-      padding-left: 18px;
-      font-size: 12px;
-      color: var(--text-muted);
-      line-height: 1.4;
-    }
+    .questions-list { margin: 0; padding-left: 18px; font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+    .questions-list li { margin-bottom: 2px; }
 
-    .questions-list li {
-      margin-bottom: 2px;
-    }
-
-    .result-placeholder {
-      font-size: 12px;
-      color: var(--text-soft);
-      line-height: 1.5;
-      margin-top: 6px;
-    }
+    .result-placeholder { font-size: 12px; color: var(--text-soft); line-height: 1.5; margin-top: 6px; }
 
     .error-text {
       font-size: 12px;
@@ -498,25 +548,14 @@
       border: 1px solid rgba(248, 113, 113, 0.7);
     }
 
-    /* 滚动条美化一点 */
-    ::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: rgba(55, 65, 81, 0.9);
-      border-radius: 999px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(75, 85, 99, 1);
-    }
+    /* 滚动条美化 */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(55, 65, 81, 0.9); border-radius: 999px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(75, 85, 99, 1); }
   </style>
 </head>
+
 <body>
   <div class="app">
     <header>
@@ -524,7 +563,17 @@
         <div class="title">Investment CRO Assistant</div>
         <div class="subtitle">给每一笔交易一份「风控体检报告」，帮你少交一点情绪税。</div>
       </div>
-      <div class="badge">本地运行 · v0.6 · 实验功能：历史记录</div>
+
+      <div class="header-right">
+        <div class="login-panel">
+          <label for="login-username">用户</label>
+          <input id="login-username" type="text" placeholder="例如：fuzhenhao / main-account" />
+          <button id="login-btn">切换</button>
+          <span id="login-status" class="login-status"></span>
+        </div>
+
+        <div class="badge">本地运行 · v0.7 · 历史记录：后端存储</div>
+      </div>
     </header>
 
     <main class="layout">
@@ -532,11 +581,21 @@
       <aside class="panel" id="history-panel">
         <div class="panel-title">
           <span>历史决策 · 最近评估</span>
-          <span class="label">localStorage</span>
+          <span class="label">server</span>
         </div>
+
+        <!-- 当前用户块（左侧也可以切换） -->
+        <div class="user-block">
+          <div class="user-row">
+            <input id="user-id-input" type="text" placeholder="输入一个用户 ID，例如：zhenghaofu / pdd-research" />
+            <button id="user-switch-btn">切换 / 保存</button>
+          </div>
+          <div id="current-user-label" class="user-current">当前用户：未设置</div>
+        </div>
+
         <div id="history-list" class="history-list"></div>
         <div class="history-actions">
-          <button id="clear-history" class="secondary-btn">清空全部历史</button>
+          <button id="clear-history" class="secondary-btn">清空当前用户历史</button>
         </div>
       </aside>
 
@@ -550,7 +609,7 @@
         <div class="form-section">
           <div class="form-label">
             <span class="label-main">一、标的名称</span>
-            <span class="label-hint">例如：NVDA/AMD/META</span>
+            <span class="label-hint">例如：NVDA / AMD / BTC</span>
           </div>
           <input id="asset_name" type="text" placeholder="写清楚：股票代码或企业名称…" />
         </div>
@@ -558,28 +617,23 @@
         <div class="form-section">
           <div class="form-label">
             <span class="label-main">二、我的研究总结</span>
-            <span class="label-hint">生意模式 · 企业文化 · 优势 / 风险 · 你真的理解这门生意吗？</span>
+            <span class="label-hint">生意模式 ·企业文化 · 优势/风险 · 你真的理解这门生意吗？</span>
           </div>
           <textarea id="research_text" placeholder="别糊弄一句‘长期看好’。写你看到的生意本质、增长驱动力、关键指标、核心风险点…"></textarea>
         </div>
 
-        <!-- ★★★ 合并后的板块：买入/卖出逻辑 + 执行计划 ★★★ -->
         <div class="form-section">
           <div class="form-label">
             <span class="label-main">三、买入 / 卖出逻辑 + 执行计划</span>
             <span class="label-hint">为什么是现在？你怎么进场，怎么退出？</span>
           </div>
-          <textarea
-            id="logic_plan"
-            placeholder="建议你至少覆盖这些内容：
-- 当前估值在哪个位置（严重低估？严重高估？）？核心假设是什么（用户增长？利润率？政策？周期？）？
-- 最可能出错的地方在哪里？
-- 入场：在哪些价格区间分几笔买入？每笔多少仓位？
-- 卖出：什么情况下会减仓 / 清仓？
-- 止损：放在哪里，背后的逻辑是什么？"
-          ></textarea>
+          <textarea id="logic_plan" placeholder="建议至少覆盖：
+- 估值位置 + 核心假设
+- 最可能出错的地方
+- 入场：价格区间、分几笔、每笔多少仓位
+- 卖出：减仓/清仓触发条件
+- 止损：放哪 + 逻辑"></textarea>
         </div>
-        <!-- ★★★ 合并结束 ★★★ -->
 
         <div class="form-row">
           <div class="form-section">
@@ -587,28 +641,15 @@
               <span class="label-main">四、当前情绪自评（1–10）</span>
               <span class="label-hint">1=冷静到无聊，10=上头梭哈</span>
             </div>
-            <input
-              id="emotion_score"
-              type="number"
-              min="1"
-              max="10"
-              placeholder="建议：谨慎评估自己的情绪"
-            />
+            <input id="emotion_score" type="number" min="1" max="10" placeholder="建议：如实填写" />
           </div>
 
           <div class="form-section">
             <div class="form-label">
               <span class="label-main">五、计划仓位（占总资金 %）</span>
-              <span class="label-hint">诚实点，这决定你睡不睡得着</span>
+              <span class="label-hint">这决定你睡不睡得着</span>
             </div>
-            <input
-              id="position_pct"
-              type="number"
-              min="0"
-              max="100"
-              step="0.1"
-              placeholder="10 表示你愿意拿出总资金的 10% "
-            />
+            <input id="position_pct" type="number" min="0" max="100" step="0.1" placeholder="10 = 总资金的 10%" />
           </div>
         </div>
 
@@ -617,16 +658,14 @@
             <span class="label-main">六、这笔钱亏光的影响</span>
             <span class="label-hint">说人话：亏光了你会怎样</span>
           </div>
-          <textarea id="capital_impact" placeholder="例如：影响不大 / 这是房子首付的一部分 / 这是半年生活费 / 这是我创业预备金…"></textarea>
+          <textarea id="capital_impact" placeholder="例如：影响不大 / 这是房子首付一部分 / 这是半年生活费 / 这是创业预备金…"></textarea>
         </div>
 
         <div class="submit-row">
           <button id="submit-btn" class="primary-btn">
             <span id="submit-text">提交给 CRO 评估</span>
           </button>
-          <div id="submit-status" class="submit-status">
-            还没开始评估。把左边填完整一点，会骂得更有价值。
-          </div>
+          <div id="submit-status" class="submit-status">还没开始评估。填完整点我才能骂得专业。</div>
         </div>
       </section>
 
@@ -640,7 +679,7 @@
         <div id="result-container">
           <div class="result-placeholder">
             这里会显示每次决策的「风控体检报告」。<br />
-            填好左侧内容，点「提交给 CRO 评估」，我会给你：
+            填好中间内容，点「提交给 CRO 评估」，我会给你：
             <ul>
               <li>总分 + 简单判定（优秀 / 一般 / 危险）</li>
               <li>五个维度的打分与点评</li>
@@ -655,29 +694,19 @@
   </div>
 
   <script>
-    // =============== 配置 ===============
-    const API_BASE = "http://127.0.0.1:8000";
-    const STORAGE_KEY = "cro_history_v1";
+    // =============== 配置（重要） ===============
+    // 你后端现在是 /evaluate /history/list /history/clear（不带 /api）
+    const API_BASE = "http://8.130.180.138:8000";
+    const USER_ID_KEY = "cro_current_user_id_v3";
 
-    // =============== 工具函数 ===============
-    function $(id) {
-      return document.getElementById(id);
-    }
+    // =============== 小工具 ===============
+    function $(id) { return document.getElementById(id); }
 
     function formatDateTime(iso) {
       const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return iso || "";
       const pad = (n) => String(n).padStart(2, "0");
-      return (
-        d.getFullYear() +
-        "-" +
-        pad(d.getMonth() + 1) +
-        "-" +
-        pad(d.getDate()) +
-        " " +
-        pad(d.getHours()) +
-        ":" +
-        pad(d.getMinutes())
-      );
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
     }
 
     function verdictClass(verdict) {
@@ -687,61 +716,96 @@
       return "verdict-mid";
     }
 
-    // =============== 历史记录：存取 ===============
-    function loadHistory() {
+    // =============== 用户管理（统一一套） ===============
+    let currentUserId = "default";
+
+    function getSavedUserId() {
+      return localStorage.getItem(USER_ID_KEY) || "default";
+    }
+
+    function setSavedUserId(uid) {
+      localStorage.setItem(USER_ID_KEY, uid);
+    }
+
+    function syncUserUI() {
+      const uid = currentUserId;
+
+      // 顶部
+      const topInput = $("login-username");
+      const topStatus = $("login-status");
+      if (topInput) topInput.value = uid;
+      if (topStatus) {
+        topStatus.textContent = "已登录：" + uid;
+        topStatus.style.color = "#9ca3af";
+      }
+
+      // 左侧
+      const leftInput = $("user-id-input");
+      const leftLabel = $("current-user-label");
+      if (leftInput) leftInput.value = uid;
+      if (leftLabel) leftLabel.textContent = "当前用户：" + uid;
+    }
+
+    async function switchUser(newId) {
+      currentUserId = newId || "default";
+      setSavedUserId(currentUserId);
+      syncUserUI();
+      await renderHistoryList();
+      $("submit-status").textContent = `已切换到用户「${currentUserId}」。历史记录按用户隔离。`;
+    }
+
+    // =============== 历史记录：后端 API ===============
+    async function fetchHistoryFromServer() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return [];
-        const parsed = JSON.parse(raw);
-        return Array.isArray(parsed) ? parsed : [];
+        const resp = await fetch(API_BASE + "/history/list", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: currentUserId, limit: 50 }),
+        });
+        if (!resp.ok) return [];
+        const data = await resp.json();
+        return Array.isArray(data) ? data : [];
       } catch (e) {
-        console.error("读取历史失败", e);
+        console.error("获取历史异常：", e);
         return [];
       }
     }
 
-    function saveHistory(list) {
+    async function clearHistoryOnServer() {
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+        const resp = await fetch(API_BASE + "/history/clear", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: currentUserId }),
+        });
+        return resp.ok;
       } catch (e) {
-        console.error("保存历史失败", e);
+        console.error("清空历史异常：", e);
+        return false;
       }
     }
 
-    function addHistoryItem(requestPayload, responseData) {
-      const list = loadHistory();
-      const item = {
-        id: Date.now(),
-        createdAt: new Date().toISOString(),
-        asset_name: requestPayload.asset_name || "",
-        request: requestPayload,
-        response: responseData,
-      };
-      list.push(item);
-      saveHistory(list);
-      renderHistoryList(item.id);
-    }
-
-    // =============== 历史记录：渲染 ===============
-    function renderHistoryList(activeId = null) {
-      const list = loadHistory().slice().sort((a, b) => b.id - a.id);
+    async function renderHistoryList(activeId = null) {
       const container = $("history-list");
+      if (!container) return;
+
+      container.innerHTML = '<div class="history-empty">加载中…</div>';
+
+      const list = await fetchHistoryFromServer();
       container.innerHTML = "";
 
       if (list.length === 0) {
-        container.innerHTML =
-          '<div class="history-empty">暂无历史记录。等你评估过几次之后，这里会变成你的「交易黑历史博物馆」。</div>';
+        container.innerHTML = '<div class="history-empty">当前用户暂时没有历史记录。等你评估过几次之后，这里会变成你的「交易黑历史博物馆」。</div>';
         return;
       }
 
       list.forEach((item) => {
         const div = document.createElement("div");
-        div.className =
-          "history-item" + (item.id === activeId ? " active" : "");
+        div.className = "history-item" + (item.id === activeId ? " active" : "");
         div.dataset.id = item.id;
 
-        const score = item.response?.overall_score ?? "-";
-        const verdict = item.response?.verdict ?? "-";
+        const score = (item.response && typeof item.response.overall_score === "number") ? item.response.overall_score : "-";
+        const verdict = (item.response && item.response.verdict) ? item.response.verdict : "-";
 
         div.innerHTML = `
           <div class="history-main">
@@ -753,54 +817,53 @@
               <span class="history-verdict">${verdict}</span>
             </div>
           </div>
-          <div class="history-meta">${formatDateTime(item.createdAt)}</div>
+          <div class="history-meta">${formatDateTime(item.created_at)}</div>
         `;
 
-        div.addEventListener("click", () => {
-          loadHistoryItem(item.id);
-        });
-
+        div.addEventListener("click", () => loadHistoryItem(item.id));
         container.appendChild(div);
       });
     }
 
-    function loadHistoryItem(id) {
-      const list = loadHistory();
+    async function loadHistoryItem(id) {
+      const list = await fetchHistoryFromServer();
       const item = list.find((x) => x.id === id);
       if (!item) return;
 
-      // 填回表单
       const req = item.request || {};
       $("asset_name").value = req.asset_name || "";
       $("research_text").value = req.research_text || "";
-
-      // 合并后：从 thesis_text / plan_text 中恢复逻辑 + 计划输入
-      const mergedLogic =
-        (req.thesis_text || "") ||
-        (req.plan_text || "");
+      const mergedLogic = (req.thesis_text || "") || (req.plan_text || "");
       $("logic_plan").value = mergedLogic;
-
-      $("emotion_score").value =
-        typeof req.emotion_score === "number" ? req.emotion_score : "";
-      $("position_pct").value =
-        typeof req.position_pct === "number" ? req.position_pct : "";
+      $("emotion_score").value = (typeof req.emotion_score === "number") ? req.emotion_score : "";
+      $("position_pct").value = (typeof req.position_pct === "number") ? req.position_pct : "";
       $("capital_impact").value = req.capital_impact || "";
 
-      // 渲染结果
       renderResult(item.response);
+      await renderHistoryList(id);
 
-      renderHistoryList(id);
-      $("submit-status").textContent =
-        "已载入历史记录（" + formatDateTime(item.createdAt) + "）。你可以在此基础上修改后重新评估。";
+      $("submit-status").textContent = `已载入历史记录（${formatDateTime(item.created_at)}）。你可以改完再评估。`;
     }
 
     // =============== 结果渲染 ===============
+    function renderDimCard(name, dim) {
+      const score = (dim && typeof dim.score === "number") ? dim.score : "—";
+      const comment = (dim && typeof dim.comment === "string") ? dim.comment : "暂无具体点评。";
+      return `
+        <div class="dim-card">
+          <div class="dim-head">
+            <div class="dim-name">${name}</div>
+            <div class="dim-score">${score}</div>
+          </div>
+          <div class="dim-comment">${comment}</div>
+        </div>
+      `;
+    }
+
     function renderResult(data) {
       const container = $("result-container");
-
       if (!data || typeof data !== "object") {
-        container.innerHTML =
-          '<div class="error-text">后端返回的内容有点奇怪，没法正常解析。</div>';
+        container.innerHTML = '<div class="error-text">后端返回的内容有点奇怪，没法正常解析。</div>';
         return;
       }
 
@@ -809,9 +872,7 @@
       const dims = data.dimensions || {};
       const flags = Array.isArray(data.flags) ? data.flags : [];
       const advice = data.advice || "";
-      const followups = Array.isArray(data.followup_questions)
-        ? data.followup_questions
-        : [];
+      const followups = Array.isArray(data.followup_questions) ? data.followup_questions : [];
 
       container.innerHTML = `
         <div class="result-header">
@@ -819,9 +880,7 @@
             <div class="score-value">${overall} / 100</div>
             <div class="score-sub">本次决策的综合得分</div>
           </div>
-          <div class="verdict-chip ${verdictClass(
-            verdict
-          )}">结论：${verdict || "——"}</div>
+          <div class="verdict-chip ${verdictClass(verdict)}">结论：${verdict || "——"}</div>
         </div>
 
         <div class="result-section-title">一、五个维度的小结</div>
@@ -836,60 +895,25 @@
         <div class="result-section-title">二、核心风险标签</div>
         ${
           flags.length > 0
-            ? `<div class="flags-wrap">
-                ${flags
-                  .map(
-                    (f) =>
-                      `<span class="flag-chip">${String(f).trim()}</span>`
-                  )
-                  .join("")}
-              </div>`
-            : '<div class="result-placeholder">暂未明显标记风险标签，这一条说明你写得可能还不够具体。</div>'
+            ? `<div class="flags-wrap">${flags.map((f) => `<span class="flag-chip">${String(f).trim()}</span>`).join("")}</div>`
+            : '<div class="result-placeholder">暂未明显标记风险标签。也可能是你写得太笼统。</div>'
         }
 
         <div class="result-section-title">三、针对本次决策的建议</div>
         ${
-          advice
-            ? `<div class="advice-box">${advice}</div>`
-            : '<div class="result-placeholder">暂无建议文本。</div>'
+          advice ? `<div class="advice-box">${advice}</div>` : '<div class="result-placeholder">暂无建议文本。</div>'
         }
 
         <div class="result-section-title">四、需要你再认真回答的追问</div>
         ${
           followups.length > 0
-            ? `<ol class="questions-list">
-                ${followups
-                  .map(
-                    (q) =>
-                      `<li>${String(q)
-                        .replace(/^\d+[\.\、]\s*/, "")
-                        .trim()}</li>`
-                  )
-                  .join("")}
-              </ol>`
-            : '<div class="result-placeholder">暂时没有追问，但这很不正常，说明你那边的描述太简单了。</div>'
+            ? `<ol class="questions-list">${followups.map((q) => `<li>${String(q).replace(/^\\d+[\\.、]\\s*/, "").trim()}</li>`).join("")}</ol>`
+            : '<div class="result-placeholder">暂时没有追问。要么你写得太少，要么模型在摸鱼。</div>'
         }
       `;
     }
 
-    function renderDimCard(name, dim) {
-      const score =
-        dim && typeof dim.score === "number" ? dim.score : "—";
-      const comment =
-        dim && typeof dim.comment === "string" ? dim.comment : "暂无具体点评。";
-
-      return `
-        <div class="dim-card">
-          <div class="dim-head">
-            <div class="dim-name">${name}</div>
-            <div class="dim-score">${score}</div>
-          </div>
-          <div class="dim-comment">${comment}</div>
-        </div>
-      `;
-    }
-
-    // =============== 提交逻辑 ===============
+    // =============== 提交评估 ===============
     async function handleSubmit() {
       const btn = $("submit-btn");
       const status = $("submit-status");
@@ -907,11 +931,7 @@
       }
 
       const emotion_score = Number(emotion_raw);
-      if (
-        !Number.isFinite(emotion_score) ||
-        emotion_score < 1 ||
-        emotion_score > 10
-      ) {
+      if (!Number.isFinite(emotion_score) || emotion_score < 1 || emotion_score > 10) {
         alert("情绪自评分请填 1–10 的数字。");
         return;
       }
@@ -923,9 +943,9 @@
       }
 
       const payload = {
+        user_id: currentUserId,
         asset_name,
         research_text,
-        // 合并后：同一份内容喂给 thesis_text 和 plan_text
         thesis_text: logic_plan,
         plan_text: logic_plan,
         emotion_score,
@@ -936,45 +956,31 @@
       try {
         btn.disabled = true;
         $("submit-text").textContent = "评估中…";
-        status.textContent =
-          "CRO 正在阅读你的废话并努力从里面找逻辑，大概几秒钟。";
+        status.textContent = "CRO 正在阅读你的内容并努力找逻辑，几秒钟。";
 
         const resp = await fetch(API_BASE + "/evaluate", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
 
         if (!resp.ok) {
           const text = await resp.text();
           $("result-container").innerHTML =
-            '<div class="error-text">后端返回错误：' +
-            resp.status +
-            " " +
-            resp.statusText +
-            "<br/>" +
-            text +
-            "</div>";
-          status.textContent =
-            "评估失败了，多半是后端 / API Key 那边出了点问题。";
+            `<div class="error-text">后端返回错误：${resp.status} ${resp.statusText}<br/>${text}</div>`;
+          status.textContent = "评估失败。检查后端日志，或者 DeepSeek 返回抽风。";
           return;
         }
 
         const data = await resp.json();
         renderResult(data);
-        addHistoryItem(payload, data);
-        status.textContent =
-          "评估完成，右侧是本次决策的体检结果。建议把追问问题一条条认真写一遍。";
+        await renderHistoryList();
+        status.textContent = "评估完成。右侧是体检结果，追问别装看不见。";
       } catch (err) {
         console.error(err);
         $("result-container").innerHTML =
-          '<div class="error-text">请求失败：' +
-          (err && err.message ? err.message : String(err)) +
-          "</div>";
-        status.textContent =
-          "前端跟后端说话失败了，检查一下后端是不是没跑起来，或者端口、网络抽风。";
+          `<div class="error-text">请求失败：${(err && err.message) ? err.message : String(err)}</div>`;
+        status.textContent = "前端跟后端说话失败。检查后端是否运行、端口是否开放、安全组是否放行。";
       } finally {
         btn.disabled = false;
         $("submit-text").textContent = "提交给 CRO 评估";
@@ -982,32 +988,36 @@
     }
 
     // =============== 清空历史 ===============
-    function clearHistory() {
-      if (
-        !confirm(
-          "确定清空所有历史记录？这只会删本机浏览器里的数据，不会影响你的真实资产，但会影响你复盘。"
-        )
-      ) {
-        return;
-      }
-      saveHistory([]);
-      renderHistoryList();
-      $("submit-status").textContent = "历史记录已清空。后面每次评估会重新积累。";
+    async function clearHistory() {
+      if (!confirm("确定清空当前用户的所有历史记录？这不会影响你的真实资产，但会影响你复盘。")) return;
+      const ok = await clearHistoryOnServer();
+      await renderHistoryList();
+      $("submit-status").textContent = ok
+        ? `当前用户「${currentUserId}」的历史记录已清空。`
+        : "清空失败。后端没理你。";
     }
 
     // =============== 初始化 ===============
     function init() {
+      currentUserId = getSavedUserId();
+      syncUserUI();
       renderHistoryList();
 
-      $("submit-btn").addEventListener("click", (e) => {
+      $("submit-btn").addEventListener("click", (e) => { e.preventDefault(); handleSubmit(); });
+
+      $("user-switch-btn").addEventListener("click", async (e) => {
         e.preventDefault();
-        handleSubmit();
+        const newId = $("user-id-input").value.trim() || "default";
+        await switchUser(newId);
       });
 
-      $("clear-history").addEventListener("click", (e) => {
+      $("login-btn").addEventListener("click", async (e) => {
         e.preventDefault();
-        clearHistory();
+        const newId = $("login-username").value.trim() || "default";
+        await switchUser(newId);
       });
+
+      $("clear-history").addEventListener("click", (e) => { e.preventDefault(); clearHistory(); });
     }
 
     document.addEventListener("DOMContentLoaded", init);
